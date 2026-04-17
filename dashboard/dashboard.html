@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Moderne (Gen Studio)</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* ==========================================
+           1. VARIABLES ET CONFIGURATION DE BASE
+           ========================================== */
+        :root {
+            --text-main: #ffffff;
+            --text-muted: #b3b3b3;
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0f0c29;
+            /* Mesh Gradient wa3er f l-khalfia */
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(188, 19, 254, 0.3) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 243, 255, 0.2) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(15, 12, 41, 1) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ==========================================
+           2. SIDEBAR (MENU LATÉRAL)
+           ========================================== */
+        .sidebar {
+            width: 250px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid var(--glass-border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.closed {
+            width: 80px;
+        }
+
+        .sidebar.closed .menu-item span, .sidebar.closed .logo h2 span {
+            display: none;
+        }
+
+        .logo {
+            margin-bottom: 40px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .neon-text {
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .menu-item {
+            text-decoration: none;
+            color: var(--text-muted);
+            padding: 12px 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            border-left: 4px solid var(--neon-purple);
+            box-shadow: 0 0 15px rgba(188, 19, 254, 0.3);
+        }
+
+        /* ==========================================
+           3. MAIN CONTENT (CONTENU PRINCIPAL)
+           ========================================== */
+        .main-content {
+            flex: 1;
+            padding: 20px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            overflow-y: auto;
+        }
+
+        /* Topbar */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            width: 300px;
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: white;
+            margin-left: 10px;
+            outline: none;
+            width: 100%;
+        }
+
+        .menu-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .menu-btn:hover {
+            color: var(--neon-blue);
+        }
+
+        .profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-blue);
+            cursor: pointer;
+        }
+
+        /* Glass Cards (WIDGETS) */
+        .widgets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            color: var(--neon-purple);
+        }
+
+        .card-info h3 {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .card-info p {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        /* ==========================================
+           4. TABLE (ACTIVITÉ RÉCENTE)
+           ========================================== */
+        .recent-activity {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 30px;
+        }
+
+        .activity-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .activity-table th, .activity-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .activity-table th {
+            color: var(--neon-blue);
+            font-weight: 600;
+        }
+
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .badge.success {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+
+        .badge.pending {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+            border: 1px solid #ffaa00;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <h2><i class="fa-solid fa-layer-group neon-text"></i> <span>Gen Studio</span></h2>
+            </div>
+            <nav class="menu">
+                <a href="#" class="menu-item active"><i class="fa-solid fa-house"></i> <span>Accueil</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-chart-pie"></i> <span>Statistiques</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-folder-open"></i> <span>Portfolios</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-users"></i> <span>Utilisateurs</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-gear"></i> <span>Paramètres</span></a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <button id="menu-toggle" class="menu-btn"><i class="fa-solid fa-bars"></i></button>
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Rechercher des projets ou étudiants...">
+                </div>
+                <div class="profile">
+                    <img src="https://ui-avatars.com/api/?name=Mohamed+Zaaboul&background=bc13fe&color=fff" alt="Profil">
+                </div>
+            </header>
+
+            <section class="widgets">
+                <div class="glass-card">
+                    <div class="card-icon"><i class="fa-solid fa-eye"></i></div>
+                    <div class="card-info">
+                        <h3>Vues Totales</h3>
+                        <p id="views-counter">12,450</p>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <div class="card-icon"><i class="fa-solid fa-check-circle"></i></div>
+                    <div class="card-info">
+                        <h3>Projets Validés</h3>
+                        <p>342</p>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <div class="card-icon"><i class="fa-solid fa-bell"></i></div>
+                    <div class="card-info">
+                        <h3>Notifications</h3>
+                        <p>18</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="recent-activity glass-card">
+                <h3>Activité Récente (Plateforme)</h3>
+                <table class="activity-table">
+                    <thead>
+                        <tr>
+                            <th>Titre du Projet</th>
+                            <th>Date de soumission</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Application E-commerce (Vue.js)</td>
+                            <td>Aujourd'hui, 14:30</td>
+                            <td><span class="badge success">Validé</span></td>
+                        </tr>
+                        <tr>
+                            <td>API RESTful avec Node.js</td>
+                            <td>Hier, 09:15</td>
+                            <td><span class="badge pending">En attente</span></td>
+                        </tr>
+                        <tr>
+                            <td>Configuration DevSecOps</td>
+                            <td>15 Avril, 16:45</td>
+                            <td><span class="badge success">Validé</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // 1. Logique pour le bouton Menu (Ouvrir/Fermer la Sidebar)
+            const menuBtn = document.getElementById("menu-toggle");
+            const sidebar = document.getElementById("sidebar");
+
+            menuBtn.addEventListener("click", () => {
+                sidebar.classList.toggle("closed");
+            });
+
+            // 2. Animation dynamique pour le compteur de vues
+            const viewsElement = document.getElementById("views-counter");
+            let currentViews = 12450;
+
+            // Augmente le nombre toutes les 3 secondes pour un effet "Live"
+            setInterval(() => {
+                const randomIncrease = Math.floor(Math.random() * 5); // Entre 0 et 4
+                currentViews += randomIncrease;
+                
+                // Formater le nombre avec des virgules (ex: 12,455)
+                viewsElement.textContent = currentViews.toLocaleString('en-US');
+            }, 3000); 
+        });
+    </script>
+</body>
+</html>
